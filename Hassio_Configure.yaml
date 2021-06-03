@@ -1,0 +1,140 @@
+
+homeassistant:
+  external_url: https://my-space-hassio.duckdns.org:8123
+#  internal_url: http://homeassistant.local:8123
+  
+  whitelist_external_dirs:
+    - '/share/tmp'
+    - '/config'
+    - '/share/mosquitto'
+    - '/share/amazon-rekognition'
+    - '/config/www/amazon-rekognition'
+
+http:
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+#   ip_ban_enabled: true
+#   login_attempts_threshold: 5
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+    whilelist_external_dirs:
+    - /tmp
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+
+logger:
+  default: info
+  
+# sensor:
+#   - platform: epsonworkforce
+#      host: 10.0.0.155
+#      monitored_conditions:
+#      - black
+#      - photoblack
+#      - yellow
+#      - magenta
+#      - cyan
+#      - clean
+
+recorder:
+
+sensor:
+  - platform: statistics
+    entity_id: sensor.temperature_humidity_humidity
+    sampling_size: 10000
+    max_age:
+      hours: 168
+  - platform: statistics
+    entity_id: sensor.withings_diastolic_blood_pressure_mmhg_smart_space
+    sampling_size: 3
+    max_age:
+      hours: 168
+    name: Stats Diastolic Blood Pressure
+  - platform: statistics
+    entity_id: sensor.withings_systolic_blood_pressure_mmhg_smart_space
+    sampling_size: 3
+    max_age:
+      hours: 168
+    name: Stats Systolic Blood Pressure
+    
+    
+      
+    
+
+image_processing:
+  - platform: amazon_rekognition
+    aws_access_key_id: AKIA26YCISHWFL3APJW7
+    aws_secret_access_key: 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
+    region_name: eu-west-1 # optional region, default is us-east-1
+    confidence: 80 # Optional, default is 80 percent
+    targets:
+      - target: person
+      - target: home decor
+      - target: architecture
+    #   - target: car
+        # confidence: 50
+    # show_boxes: False
+    # roi_x_min: 0.35 # optional, range 0-1, must be less than roi_x_max
+    roi_x_max: 0.8 # optional, range 0-1, must be more than roi_x_min
+    roi_y_min: 0.4 # optional, range 0-1, must be less than roi_y_max
+    roi_y_max: 0.8 # optional, range 0-1, must be more than roi_y_min
+    scale: 0.75
+    save_file_format: png
+    save_file_folder: /config/www/amazon-rekognition/ # Optional image storage
+    save_timestamped_file: True # Set True to save timestamped images, default False
+    s3_bucket: smart-space
+    always_save_latest_file: True
+    source:
+      - entity_id: camera.raspicam
+      
+
+withings:
+  client_id: f12eb2281e7d3ab06b5202a9c7bd3cc102f3e0c09ca36128738218cc44746e4b
+  client_secret: fba2a5b1d50b2e783c565d737929b299cff45675bac89a886c49d61134860412
+  use_webhook: true
+    
+camera:
+    - platform: ffmpeg
+      name: raspicam
+      input: tcp://10.0.0.9:9000
+
+
+mqtt:
+  broker: a386mbo4elm5ey-ats.iot.eu-west-1.amazonaws.com
+  port: 8883
+#   certificate: /share/mosquitto/rootCA.pem
+  certificate: auto
+  client_key: /share/mosquitto/private.key
+  client_cert: /share/mosquitto/cert.crt
+#   tls_version: '1.2'
+  tls_insecure: false
+
+#http:
+#  ssl_certificate: /ssl/fullchain.pem
+#  ssl_key: /ssl/privkey.pem
+  
+# camera:
+#     platform: rpi_camera
+#     name: Raspberry Pi Camera
+#     image_width: 640
+#     image_height: 480
+#     image_quality: 7
+#     image_rotation: 0
+#     timelapse: 1000
+#     horizontal_flip: 0
+#     vertical_flip: 0
+#     file_path: /tmp/image.jpg
+
+# rpi_camera:
+#      name: Office Camera
+#      timelapse: 1000
+#      file_path: /tmp/image.jpg
