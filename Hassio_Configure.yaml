@@ -72,8 +72,8 @@ sensor:
 
 image_processing:
   - platform: amazon_rekognition
-    aws_access_key_id: AKIA26YCISHWFL3APJW7
-    aws_secret_access_key: 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
+    aws_access_key_id:
+    aws_secret_access_key:
     region_name: eu-west-1 # optional region, default is us-east-1
     confidence: 80 # Optional, default is 80 percent
     targets:
