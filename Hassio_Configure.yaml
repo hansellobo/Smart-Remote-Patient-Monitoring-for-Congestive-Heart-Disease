@@ -1,7 +1,7 @@
 
 homeassistant:
-  external_url: https://my-space-hassio.duckdns.org:8123
-#  internal_url: http://homeassistant.local:8123
+  # external_url: https://my-space-hassio.duckdns.org:8123
+  internal_url: http://homeassistant.local:8123
   
   whitelist_external_dirs:
     - '/share/tmp'
